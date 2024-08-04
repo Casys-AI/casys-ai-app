@@ -1,0 +1,36 @@
+{
+	"name": "smaas-app",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-auto": "^3.0.0",
+		"@sveltejs/kit": "^2.0.0",
+		"@sveltejs/vite-plugin-svelte": "^3.0.0",
+		"@tailwindcss/typography": "^0.5.13",
+		"@types/d": "^1.0.4",
+		"@types/d3": "^7.4.3",
+		"autoprefixer": "^10.4.19",
+		"flowbite": "^2.4.1",
+		"flowbite-svelte": "^0.46.15",
+		"postcss": "^8.4.38",
+		"svelte": "^4.2.7",
+		"svelte-check": "^3.6.0",
+		"tailwindcss": "^3.4.4",
+		"typescript": "^5.0.0",
+		"vite": "^5.0.3"
+	},
+	"type": "module",
+	"dependencies": {
+		"d3": "^7.9.0",
+		"marked": "^13.0.3",
+		"mermaid": "^10.9.1",
+		"svelte-heros-v2": "^1.3.0"
+	}
+}
