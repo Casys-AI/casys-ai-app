@@ -4,6 +4,7 @@
     import { Textarea, Button } from 'flowbite-svelte';
     import ForceGraph from '$lib/components/specific/ForceGraph.svelte';
     import { currentSystem, systems, switchSystem } from '$lib/stores/systemStore.js';
+    import { generateMermaidDiagram, updateMermaidDiagram, simulateGenerateMermaidDiagram } from '$lib/services/apiService.js';
 
     let localSystems = [];
     let newSystemDescription = "";
@@ -37,23 +38,37 @@
         }
     }
 
-    function createNewSystem() {
+    async function createNewSystem() {
         const newId = localSystems.length + 1;
-        const newSystem = {
-            id: newId,
-            name: `Nouveau Système ${newId}`,
-            description: newSystemDescription,
-            file: fileContent,
-            nodes: [],
-            links: []
-        };
+        const file = fileInput.files[0];
 
-        systems.update(sys => [...sys, newSystem]);
-        switchSystem(newSystem);
-        newSystemDescription = "";
-        fileContent = "";
-        if (fileInput) fileInput.value = "";
-        goto(`/app/system/${newId}`);
+        try {
+            let mermaidDiagram;
+            if (import.meta.env.MODE === 'development') {
+                mermaidDiagram = await simulateGenerateMermaidDiagram(file, newSystemDescription);
+            } else {
+                mermaidDiagram = await generateMermaidDiagram(file, newSystemDescription);
+            }
+
+            const newSystem = {
+                id: newId,
+                name: `Nouveau Système ${newId}`,
+                description: newSystemDescription,
+                mermaidSyntax: mermaidDiagram,
+                nodes: [],
+                links: []
+            };
+
+            systems.update(sys => [...sys, newSystem]);
+            switchSystem(newSystem);
+            newSystemDescription = "";
+            fileContent = "";
+            if (fileInput) fileInput.value = "";
+            goto(`/app/system/${newId}`);
+        } catch (err) {
+            console.error('Error creating new system:', err);
+            // Gérer l'erreur (par exemple, afficher un message à l'utilisateur)
+        }
     }
 
     function handleKeyDown(event, system) {
