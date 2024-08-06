@@ -3,7 +3,6 @@
     import * as d3 from 'd3';
 
     export let data;
-    export let onNodeClick;
 
     let svg;
 
@@ -96,10 +95,7 @@
                 .on("end", dragended);
         }
 
-        node.on('click', (event, d) => {
-            event.stopPropagation();
-            onNodeClick(d);
-        });
+
     });
 </script>
 

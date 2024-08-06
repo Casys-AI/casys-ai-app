@@ -1,116 +1,58 @@
 <script>
-    import {createEventDispatcher, onDestroy, onMount} from 'svelte';
+    import {createEventDispatcher} from 'svelte';
 
     const dispatch = createEventDispatcher();
 
-    let folders = [
-
+    let files = [
         {
-
-            name: 'Folder 1',
-
-            files: [{name: 'File 1-1', id: 'file-1-1'}, {name: 'File 1-2', id: 'file-1-2'}, {
-
-                name: 'File 1-3',
-
-                id: 'file-1-3'
-
-            }],
-
-            isOpen: false
-
+            name: 'Dossier 1', type: 'folder', children: [
+                {name: 'Fichier 1.1', type: 'file'},
+                {name: 'Fichier 1.2', type: 'file'}
+            ]
         },
-
         {
-
-            name: 'Folder 2',
-
-            files: [{name: 'File 2-1', id: 'file-2-1'}, {name: 'File 2-2', id: 'file-2-2'}],
-
-            isOpen: false
-
-        }
-
+            name: 'Dossier 2', type: 'folder', children: [
+                {name: 'Fichier 2.1', type: 'file'}
+            ]
+        },
+        {name: 'Fichier 3', type: 'file'}
     ];
 
-    let contextMenu = {
-        visible: false,
-        x: 0,
-        y: 0,
-    };
-
-    // Options pour le menu contextuel
-    const fileTypeOptions = [
-        {label: 'Markdown', value: '.md'},
-        {label: 'Texte', value: '.txt'},
-        {label: 'Svelte', value: '.svelte'},
-    ];
-
-    function toggleFolder(index) {
-        folders[index].isOpen = !folders[index].isOpen;
+    function toggleFolder(folder) {
+        folder.isOpen = !folder.isOpen;
     }
 
     function selectFile(file) {
-        dispatch('fileClick', file);
+        dispatch('fileSelect', file);
     }
-
-    function showContextMenu(event, index) {
-        event.preventDefault();
-        contextMenu.visible = true;
-        contextMenu.x = event.clientX;
-        contextMenu.y = event.clientY;
-    }
-
-    function hideContextMenu() {
-        contextMenu.visible = false;
-    }
-
-    function createFile(fileType) {
-        // Logique pour créer le fichier du type choisi
-        console.log(`Créer un fichier ${fileType}`);
-        hideContextMenu();
-    }
-
-    onMount(() => {
-        document.addEventListener('click', hideContextMenu);
-    });
-
-    onDestroy(() => {
-        document.removeEventListener('click', hideContextMenu);
-    });
 </script>
 
-<div class="sidebar">
-    {#each folders as folder, index}
-        <div on:contextmenu={(e) => showContextMenu(e, index)}>
-            <div class="folder" on:click={() => toggleFolder(index)}>
-                <svg>...</svg> {folder.name}
-            </div>
-            {#if folder.isOpen}
-                <ul>
-                    {#each folder.files as file}
-                        <li class="file" on:click={() => selectFile(file)}>
-                            {file.name}
-                        </li>
-                    {/each}
-                </ul>
+<ul class="file-tree">
+    {#each files as item}
+        <li>
+            {#if item.type === 'folder'}
+                <span on:click={() => toggleFolder(item)}>
+                    {item.isOpen ? '📂' : '📁'} {item.name}
+                </span>
+                {#if item.isOpen}
+                    <svelte:self files={item.children}/>
+                {/if}
+            {:else}
+                <span on:click={() => selectFile(item)}>
+                    📄 {item.name}
+                </span>
             {/if}
-        </div>
+        </li>
     {/each}
+</ul>
 
-    {#if contextMenu.visible}
-        <div
-                class="absolute z-10 bg-white p-2 rounded shadow"
-                style="left: {contextMenu.x}px; top: {contextMenu.y}px;"
-        >
-            {#each fileTypeOptions as option}
-                <button
-                        class="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
-                        on:click={() => createFile(option.value)}
-                >
-                    {option.label}
-                </button>
-            {/each}
-        </div>
-    {/if}
-</div>
+<style>
+    .file-tree {
+        list-style-type: none;
+        padding-left: 20px;
+    }
+
+    span {
+        cursor: pointer;
+    }
+</style>

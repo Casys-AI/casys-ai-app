@@ -1,24 +1,34 @@
 <script>
     import { onMount } from 'svelte';
-    import mermaid from 'mermaid';
 
     export let chart;
 
-    let element;
+    let iframe;
 
-    onMount(() => {
-        mermaid.initialize({ startOnLoad: true });
-        mermaid.render('mermaid-svg', chart).then(({ svg }) => {
-            element.innerHTML = svg;
-        });
-    });
+    $: if (iframe && chart) {
+        updateChart();
+    }
+
+    function updateChart() {
+        const html = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"><\/script>
+                <script>
+                    mermaid.initialize({ startOnLoad: true });
+                <\/script>
+            </head>
+            <body>
+                <div class="mermaid">
+                    ${chart}
+                </div>
+            </body>
+            </html>
+        `;
+
+        iframe.srcdoc = html;
+    }
 </script>
 
-<div bind:this={element}></div>
-
-<style>
-    div :global(svg) {
-        max-width: 100%;
-        height: auto;
-    }
-</style>
+<iframe title="Mermaid Diagram" bind:this={iframe} style="width: 100%; height: 100%; border: none;"></iframe>
