@@ -1,0 +1,9 @@
+{
+  "suggestions": [
+    { "label": "Requirement", "insertText": "Requirement[${1:ID}: ${2:Description}]", "documentation": "Insérer un élément Requirement" },
+    { "label": "Use Case", "insertText": "UseCase((${1:Name}))", "documentation": "Insérer un élément Use Case" },
+    { "label": "Actor", "insertText": "Actor[${1:Name}]", "documentation": "Insérer un élément Actor" },
+    { "label": "System", "insertText": "System{${1:Name}}", "documentation": "Insérer un élément System" },
+    { "label": "Component", "insertText": "Component[${1:Name}]", "documentation": "Insérer un élément Component" }
+  ]
+}

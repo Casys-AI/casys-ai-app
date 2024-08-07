@@ -25,3 +25,19 @@ export const systems = writable([
 export function switchSystem(system) {
     currentSystem.set(system);
 }
+
+export async function loadSuggestions() {
+    try {
+        const response = await fetch('/suggestions.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (!data || !data.suggestions) {
+            throw new Error('Invalid suggestions data');
+        }
+        currentSystem.update(sys => ({ ...sys, customSuggestions: data.suggestions }));
+    } catch (error) {
+        console.error('Error loading suggestions:', error);
+    }
+}

@@ -2,25 +2,26 @@
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
     import { Breadcrumb, BreadcrumbItem, Button } from 'flowbite-svelte';
+    import MonacoEditor from '$lib/components/specific/MonacoEditor.svelte';
     import Mermaid from '$lib/components/specific/Mermaid.svelte';
-    import { currentSystem, systems } from '$lib/stores/systemStore.js';
+    import { currentSystem, systems, loadSuggestions } from '$lib/stores/systemStore.js';
 
     let systemData;
     let mermaidSyntax = "";
+    let customSuggestions = [];
 
-    $: {
-        if ($currentSystem && $currentSystem.id === parseInt($page.params.id)) {
-            systemData = $currentSystem;
-        }
+    $: if ($currentSystem && $currentSystem.id === parseInt($page.params.id)) {
+        systemData = $currentSystem;
+        mermaidSyntax = systemData.mermaidSyntax;
     }
 
-    onMount(() => {
-        if (systemData) {
-            mermaidSyntax = systemData.mermaidSyntax || "graph TD\nA-->B\nA-->C\nB-->D\nC-->F";
-        }
+    onMount(async () => {
+        await loadSuggestions();
+        customSuggestions = $currentSystem.customSuggestions || [];
     });
 
-    function updateDiagram() {
+    function updateDiagram(event) {
+        mermaidSyntax = event.detail;
         currentSystem.update(sys => ({ ...sys, mermaidSyntax: mermaidSyntax }));
     }
 
@@ -42,18 +43,14 @@
         </Breadcrumb>
 
         <div class="flex w-full mb-4 space-x-4">
-            <div class="flex-1 border rounded-lg p-4">
+            <div class="flex-1 border rounded-lg p-4" style="height: 500px;">
                 <h2 class="text-xl font-bold mb-2">Syntaxe Mermaid</h2>
-                <textarea
-                        bind:value={mermaidSyntax}
-                        on:input={updateDiagram}
-                        class="w-full h-64 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                ></textarea>
+                <MonacoEditor bind:value={mermaidSyntax} language="mermaid" theme="vs-dark" customSuggestions={customSuggestions} on:input={updateDiagram} />
             </div>
             <div class="flex-1 border rounded-lg p-4">
                 <h2 class="text-xl font-bold mb-2">Diagramme Mermaid</h2>
                 <div class="w-full h-64">
-                    <Mermaid chart={mermaidSyntax}/>
+                    <Mermaid chart={mermaidSyntax} />
                 </div>
             </div>
         </div>
