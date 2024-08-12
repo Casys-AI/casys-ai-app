@@ -26,6 +26,7 @@
 <!--    });-->
 <!--</script>-->
 
+<!--
 {#if isLoading}
     <p>Loading carousel...</p>
 {:else if error}
@@ -36,4 +37,4 @@
             <img class="w-full" src={image.src} alt={image.alt}>
         {/each}
     </Carousel>
-{/if}
+{/if}-->

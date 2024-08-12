@@ -1,46 +1,163 @@
 <script>
-    import { Accordion, AccordionItem, Button } from 'flowbite-svelte';
+    import {onMount, afterUpdate} from 'svelte';
+    import {Button} from 'flowbite-svelte';
+    import {fade, fly} from 'svelte/transition';
+
+    let messages = [];
+    let userInput = '';
+    let chatContainer;
+    let showChat = false;
+    let showNotification = true;
+    let isTyping = false;
+
+    const presetQuestions = [
+        "How does casys.ai handle multi-scale systems?",
+        "What are the applications of casys.ai in urban planning?",
+        "Can you explain casys.ai's approach to optimizing complex systems?",
+        "How does casys.ai's AI adapt to dynamic changes in systems?"
+    ];
+
+    let currentQuestionIndex = 0;
+
+    async function sendMessage(question = userInput) {
+        if (!question.trim()) return;
+
+        messages = [...messages, {text: question, isUser: true}];
+        userInput = '';
+        isTyping = true;
+
+        setTimeout(() => {
+            const aiResponse = `Here is a response to your question about casys.ai: "${question}"`;
+            messages = [...messages, {text: aiResponse, isUser: false}];
+            isTyping = false;
+
+            currentQuestionIndex = (currentQuestionIndex + 1) % presetQuestions.length;
+        }, 2000);
+    }
+
+    onMount(() => {
+        setTimeout(() => {
+            showNotification = false;
+            showChat = true;
+        }, 3000);
+    });
+
+    afterUpdate(() => {
+        if (chatContainer) {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    });
+
+    function toggleChat() {
+        showChat = !showChat;
+        if (showChat) {
+            showNotification = false;
+        }
+    }
+
+    function handleKeydown(event) {
+        if (event.key === 'Enter') {
+            toggleChat();
+        }
+    }
 </script>
 
-<section class="bg-white dark:bg-gray-900 py-24">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-extrabold text-center text-gray-900 dark:text-white sm:text-4xl mb-12">
-            Frequently Asked Questions
-        </h2>
+<style>
+    .chat-window {
+        max-width: 350px;
+        min-width: 300px;
+        height: 450px;
+    }
 
-        <Accordion>
-            <AccordionItem>
-                <span slot="header">How does ModelTrace differ from traditional modeling tools?</span>
-                <p class="mb-2 text-gray-500 dark:text-gray-400">
-                    ModelTrace combines the power of AI with intuitive design tools to streamline the entire system modeling process. Unlike traditional tools, it offers real-time collaboration, smart suggestions, and seamless integration with requirement tracking.
-                </p>
-            </AccordionItem>
-            <AccordionItem>
-                <span slot="header">Can I import my existing models and requirements?</span>
-                <p class="mb-2 text-gray-500 dark:text-gray-400">
-                    Yes, ModelTrace supports importing from a wide range of formats, including UML, SysML, and various requirement management tools. Our AI assists in mapping and optimizing your existing data within our platform.
-                </p>
-            </AccordionItem>
-            <AccordionItem>
-                <span slot="header">Is ModelTrace suitable for large enterprise projects?</span>
-                <p class="mb-2 text-gray-500 dark:text-gray-400">
-                    Absolutely! ModelTrace is designed to scale with your needs. Our Enterprise plan offers advanced features like custom integrations, dedicated support, and enhanced security measures to meet the demands of large-scale projects.
-                </p>
-            </AccordionItem>
-        </Accordion>
-    </div>
-</section>
+    .notification {
+        background-color: #6E1187;
+        color: #FBFBFB;
+    }
 
-<section class="bg-primary-600 dark:bg-primary-500 py-24">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 class="text-3xl font-extrabold text-white sm:text-4xl">
-            Ready to transform your system design process?
-        </h2>
-        <p class="mt-4 text-xl text-primary-100 max-w-2xl mx-auto">
-            Join thousands of teams already using ModelTrace to streamline their workflows and deliver better systems, faster.
-        </p>
-        <div class="mt-8 flex justify-center">
-            <Button size="xl">Start Your Free Trial</Button>
+    .chat-button {
+        cursor: pointer;
+        width: 50px;
+        height: 50px;
+        transition: transform 0.3s ease;
+        background: none;
+        border: none;
+        padding: 0;
+    }
+
+    .chat-button:hover {
+        transform: scale(1.1);
+    }
+
+    .message-bubble {
+        max-width: 80%;
+        word-wrap: break-word;
+    }
+</style>
+
+<section class="fixed bottom-4 right-4 z-50">
+    {#if showNotification}
+        <div class="notification p-4 rounded-lg shadow-lg mb-4" transition:fade>
+            <p>Hi! Need help understanding casys.ai? Chat with our AI assistant.</p>
+            <Button size="sm" class="bg-cassis-600 hover:bg-cassis-700 text-pearl-50 mt-2" on:click={toggleChat}>
+                Start Chat
+            </Button>
         </div>
-    </div>
+    {/if}
+
+    {#if !showChat}
+        <button
+                class="chat-button"
+                on:click={toggleChat}
+                on:keydown={handleKeydown}
+                aria-label="Open chat"
+        >
+            <img src="/images/logo.svg" alt="Chat icon" width="50" height="50"/>
+        </button>
+    {/if}
+
+    {#if showChat}
+        <div class="bg-pearl-100 p-4 rounded-lg shadow-lg chat-window" transition:fly="{{ y: 50, duration: 300 }}">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-extrabold text-midnight-900 font-mono">Chat with casys.ai</h2>
+                <Button size="xs" class="bg-cassis-600 hover:bg-cassis-700 text-pearl-50" on:click={toggleChat}>Close
+                </Button>
+            </div>
+
+            <div bind:this={chatContainer} class="h-64 overflow-y-auto mb-4 p-4 bg-pearl-50 rounded shadow-inner">
+                {#each messages as message}
+                    <div class={`mb-2 ${message.isUser ? 'text-right' : 'text-left'}`} transition:fade>
+                        <span class={`inline-block p-2 rounded-lg message-bubble ${message.isUser ? 'bg-cassis-600 text-pearl-50' : 'bg-pearl-100 text-midnight-900'}`}>
+                            {message.text}
+                        </span>
+                    </div>
+                {/each}
+                {#if isTyping}
+                    <div class="text-left" transition:fade>
+                        <span class="inline-block p-2 rounded-lg bg-pearl-100 text-midnight-900">
+                            Typing...
+                        </span>
+                    </div>
+                {/if}
+            </div>
+
+            <form on:submit|preventDefault={() => sendMessage()} class="flex mb-4">
+                <input
+                        bind:value={userInput}
+                        placeholder="Ask about casys.ai..."
+                        class="flex-grow mr-2 p-2 rounded bg-pearl-50 text-midnight-900 border border-cassis-500 focus:outline-none focus:ring-2 focus:ring-cassis-500"
+                />
+                <Button type="submit" class="bg-cassis-600 hover:bg-cassis-700 text-pearl-50">Send</Button>
+            </form>
+
+            <div class="flex flex-wrap gap-2">
+                <Button
+                        size="sm"
+                        class="bg-cassis-600 hover:bg-cassis-700 text-pearl-50 transition-all duration-300 ease-in-out transform hover:scale-105"
+                        on:click={() => sendMessage(presetQuestions[currentQuestionIndex])}
+                >
+                    {presetQuestions[currentQuestionIndex]}
+                </Button>
+            </div>
+        </div>
+    {/if}
 </section>
