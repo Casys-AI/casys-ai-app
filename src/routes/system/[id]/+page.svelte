@@ -38,8 +38,8 @@
         </div>
 
         <Breadcrumb class="mb-4 w-full">
-            <BreadcrumbItem href="/app">Knowledge Base</BreadcrumbItem>
-            <BreadcrumbItem href="/app/system/{$page.params.id}">Système {$page.params.id}</BreadcrumbItem>
+            <BreadcrumbItem href="/">Knowledge Base</BreadcrumbItem>
+            <BreadcrumbItem href="/system/{$page.params.id}">Système {$page.params.id}</BreadcrumbItem>
         </Breadcrumb>
 
         <div class="flex w-full mb-4 space-x-4">
