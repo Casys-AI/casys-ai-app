@@ -1,147 +1,97 @@
-<header>
-    <nav
-            class="bg-white border-gray-200 px-4 py-3 dark:bg-gray-800">
-        <div class="flex justify-between items-center">
-            <div class="flex justify-start items-center">
-                <a href="https://flowbite.com" class="flex mr-6">
-                    <img
-                            src="https://flowbite.s3.amazonaws.com/logo.svg"
-                            class="mr-3 h-8"
-                            alt="Flowbite Logo"
-                    />
-                    <span
-                            class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Flowbite</span>
-                </a>
-            </div>
-            <div class="flex justify-between items-center text-sm space-x-4 lg:order-2">
-                <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">My profile</a>
-                <div class="h-4 w-px mx-2 border dark:border-gray-700"></div>
-                <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Logout</a>
-            </div>
-        </div>
-    </nav>
+<script>
+    import {onMount} from 'svelte';
+    import {fade} from 'svelte/transition';
 
-    <nav
-            id="toggleMobileMenu"
-            class="bg-gray-50 border-b border-gray-200 dark:bg-gray-700 dark:border-gray-800">
-        <div class="px-4 py-2">
+    let darkMode = false;
+    let dropdownOpen = false;
+
+    // Fonction pour basculer entre les modes clair et sombre
+    function toggleDarkMode() {
+        darkMode = !darkMode;
+        updateTheme();
+    }
+
+    function updateTheme() {
+        if (darkMode) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('theme', darkMode ? 'dark' : 'light');
+        }
+    }
+
+    onMount(() => {
+        // Accéder à localStorage uniquement après le montage
+        if (typeof localStorage !== 'undefined') {
+            const savedTheme = localStorage.getItem('theme');
+            darkMode = savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            updateTheme();
+        }
+    });
+</script>
+
+<header class="bg-pearl-50 dark:bg-midnight-800 shadow">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+
+            <div class="flex">
+
+                <!-- Boutons de la barre de navigation -->
+                <button class="text-midnight-500 dark:text-pearl-100 hover:bg-cassis-200 dark:hover:bg-cassis-700 px-3 py-2 rounded-md text-sm font-medium">
+                    Bouton 1
+                </button>
+                <button class="ml-4 text-midnight-500 dark:text-pearl-100 hover:bg-cassis-200 dark:hover:bg-cassis-700 px-3 py-2 rounded-md text-sm font-medium">
+                    Bouton 2
+                </button>
+                <button class="ml-4 text-midnight-500 dark:text-pearl-100 hover:bg-cassis-200 dark:hover:bg-cassis-700 px-3 py-2 rounded-md text-sm font-medium">
+                    Bouton 3
+                </button>
+            </div>
+
             <div class="flex items-center">
-                <ul
-                        class="flex items-center text-sm text-gray-600 font-medium">
-                    <li
-                            class="block lg:inline">
-                        <a
-                                href="#"
-                                class="inline-block px-3 py-2 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white">Overview</a>
-                    </li>
-                    <li
-                            class="block lg:inline">
-                        <a
-                                href="#"
-                                class="inline-block px-3 py-2 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white">Sales</a>
-                    </li>
-                    <li
-                            class="block lg:inline">
-                        <a
-                                href="#"
-                                class="inline-block px-3 py-2 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white">Billing</a>
-                    </li>
-                    <li
-                            class="md:block lg:inline hidden">
-                        <a
-                                href="#"
-                                class="inline-block px-3 py-2 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white">Team</a>
-                    </li>
-                    <li
-                            class="md:block lg:inline hidden">
-                        <a
-                                href="#"
-                                class="inline-block px-3 py-2 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white">Resources</a>
-                    </li>
-                    <li
-                            class="md:block lg:inline hidden">
-                        <a
-                                href="#"
-                                class="inline-block px-3 py-2 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white">Messages</a>
-                    </li>
-                    <li
-                            class="md:block lg:inline hidden">
-                        <a
-                                href="#"
-                                class="inline-block px-3 py-2 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white">Support</a>
-                    </li>
-                    <li
-                            class="block md:hidden">
-                        <button
-                                id="navigationDropdownButton"
-                                aria-expanded="false"
-                                data-dropdown-toggle="navigationDropdown"
-                                class="inline-flex items-center justify-center px-2 py-2 rounded-xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-                            </svg>
-                        </button>
+                <!-- Switcher de mode sombre -->
+                <button
+                        class="text-midnight-500 dark:text-pearl-100 hover:bg-cassis-200 dark:hover:bg-cassis-700 px-3 py-2 rounded-md text-sm font-medium"
+                        on:click={toggleDarkMode}
+                >
+                    {#if darkMode}
+                        ☀️
+                    {:else}
+                        🌙
+                    {/if}
+                </button>
 
+                <!-- Menu du profil -->
+                <div class="ml-4 relative">
+                    <button
+                            class="flex items-center text-midnight-500 dark:text-pearl-100 focus:outline-none"
+                            on:click={() => (dropdownOpen = !dropdownOpen)}
+                    >
+                        <img alt="Votre profil" class="h-8 w-8 rounded-full" src="/images/profile.jpg"/>
+                    </button>
+                    {#if dropdownOpen}
                         <div
-                                class="hidden z-50 my-4 w-56 text-base list-none bg-white rounded-xl divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600"
-                                id="navigationDropdown">
-                            <ul
-                                    class="py-1 text-gray-700 dark:text-gray-300"
-                                    aria-labelledby="navigationDropdownButton">
-                                <li>
-                                    <a
-                                            href="#"
-                                            class="flex items-center py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                                        Overview
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                            href="#"
-                                            class="flex items-center py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                                        Sales
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                            href="#"
-                                            class="flex items-center py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                                        Billing
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                            href="#"
-                                            class="flex items-center py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                                        Team
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                            href="#"
-                                            class="flex items-center py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                                        Resources
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                            href="#"
-                                            class="flex items-center py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                                        Messages
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                            href="#"
-                                            class="flex items-center py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                                        Support
-                                    </a>
-                                </li>
-                            </ul>
+                                class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-pearl-100 dark:bg-midnight-700 ring-1 ring-black ring-opacity-5"
+                                transition:fade
+                        >
+                            <a href="/settings"
+                               class="block px-4 py-2 text-sm text-midnight-500 dark:text-pearl-100 hover:bg-cassis-200 dark:hover:bg-cassis-700">Paramètres</a>
+                            <a href="/logout"
+                               class="block px-4 py-2 text-sm text-midnight-500 dark:text-pearl-100 hover:bg-cassis-200 dark:hover:bg-cassis-700">Déconnexion</a>
                         </div>
-                    </li>
-                </ul>
+                    {/if}
+                </div>
             </div>
         </div>
-    </nav>
+    </div>
 </header>
+
+<style>
+    header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+</style>

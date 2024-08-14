@@ -3,8 +3,8 @@
     import { onMount } from 'svelte';
     import NavBar from "$lib/components/navigation/NavBar.svelte";
     import "../app.css"
-    import Drawer from "$lib/components/navigation/Drawer.svelte";
-
+    import Drawer from "$lib/components/navigation/SideBar.svelte";
+    import {DarkMode} from 'flowbite-svelte';
 </script>
 
 <div class="antialiased bg-gray-50 dark:bg-gray-900">
