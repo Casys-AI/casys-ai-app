@@ -22,7 +22,11 @@ export const systems = writable([
     },
 ]);
 
+/**
+ * @param {{ id: number; name: string; description: string; mermaidSyntax: any; nodes: never[]; links: never[]; } | null} system
+ */
 export function switchSystem(system) {
+    // @ts-ignore
     currentSystem.set(system);
 }
 
@@ -36,6 +40,7 @@ export async function loadSuggestions() {
         if (!data || !data.suggestions) {
             throw new Error('Invalid suggestions data');
         }
+        // @ts-ignore
         currentSystem.update(sys => ({ ...sys, customSuggestions: data.suggestions }));
     } catch (error) {
         console.error('Error loading suggestions:', error);
